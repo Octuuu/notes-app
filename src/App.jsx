@@ -3,6 +3,21 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import Auth from './pages/Auth'
+import folderView from './pages/FolderView'
+import NoteDetail from './pages/NoteDetail'
+import NotFound from './pages/NotFound'
+import LoadingSpinner from './components/ui/LoadingSpinner'
+
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth()
+  if (loading) return <LoadingSpinner />
+  if (!user) return <Navigate to="/auth" />
+  return children
+}
+
 
 function App() {
   const [count, setCount] = useState(0)
