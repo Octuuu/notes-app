@@ -1,8 +1,11 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   body {
     @apply bg-dark-900 text-gray-100;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
 
@@ -23,8 +26,37 @@
            focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500
            transition-all duration-200 text-gray-100 placeholder:text-gray-500;
   }
+
+  .card {
+    @apply bg-dark-800/50 backdrop-blur-sm border border-dark-700 rounded-xl 
+           hover:border-purple-500/50 hover:bg-dark-800 transition-all duration-200;
+  }
 }
 
+@layer utilities {
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+/* Scrollbar personalizado */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -40,4 +72,38 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-500;
+}
+
+/* Animaciones personalizadas */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

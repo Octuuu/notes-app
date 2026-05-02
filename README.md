@@ -14,3 +14,24 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+# NoteKeep - Aplicación de Notas
+
+Una aplicación web moderna para gestionar notas, documentos y eventos con carpetas personalizables.
+
+## 🚀 Características
+
+- ✅ Autenticación de usuarios (registro/login)
+- ✅ Crear, editar y eliminar carpetas
+- ✅ Crear, editar y eliminar notas
+- ✅ Subir archivos adjuntos (imágenes, PDFs, documentos)
+- ✅ Guardado automático de notas
+- ✅ Interfaz oscura moderna
+- ✅ Diseño responsive
+
+## 📦 Instalación
+
+1. Clonar el repositorio
+2. Instalar dependencias:
+```bash
+npm install
