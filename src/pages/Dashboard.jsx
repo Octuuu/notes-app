@@ -186,8 +186,8 @@ const Dashboard = () => {
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                NoteKeep Explorer
+              <h1 className="text-2xl font-bold text-white">
+                Notas app
               </h1>
               <p className="text-gray-500 text-sm mt-0.5">
                 {folders.length} carpetas • {Object.values(notesByFolder).flat().length} notas
@@ -210,13 +210,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Contenido principal - Estilo Windows Explorer */}
       <div className="max-w-6xl mx-auto px-6 py-6">
-        {/* Barra de herramientas */}
+        
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 hover  text-white rounded-lg hover:bg-gray-950 transition text-sm font-medium"
           >
             <FolderPlus size={18} />
             Nueva carpeta
@@ -226,7 +225,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Listado vertical de carpetas (estilo Windows Explorer) */}
         {folders.length === 0 ? (
           <div className="text-center py-20 bg-dark-800/30 rounded-xl border border-dashed border-dark-700">
             <Folder className="mx-auto text-gray-600 mb-3" size={48} />
@@ -237,10 +235,10 @@ const Dashboard = () => {
           <div className="space-y-1">
             {folders.map((folder) => (
               <div key={folder.id} className="group">
-                {/* Cabecera de la carpeta */}
+
                 <div 
                   className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-dark-800 cursor-pointer transition group"
-                  style={{ borderLeft: `3px solid ${folder.color || '#8b5cf6'}` }}
+                  
                 >
                   <div 
                     className="flex items-center gap-2 flex-1"
@@ -253,7 +251,7 @@ const Dashboard = () => {
                         <ChevronRight size={18} className="text-gray-400" />
                       )}
                     </button>
-                    <Folder size={18} className="text-purple-400" />
+                    <Folder size={18} className="text-white" />
                     
                     {editingFolderId === folder.id ? (
                       <input
