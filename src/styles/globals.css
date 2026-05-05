@@ -107,3 +107,27 @@
 .animate-pulse-slow {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+/* Transiciones suaves para expandir/colapsar */
+.folder-children-enter {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.2s ease-out;
+}
+
+.folder-children-enter-active {
+  opacity: 1;
+  max-height: 500px;
+}
+
+.folder-children-exit {
+  opacity: 1;
+  max-height: 500px;
+}
+
+.folder-children-exit-active {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.2s ease-out;
+}
