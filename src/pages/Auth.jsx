@@ -96,7 +96,7 @@ const Auth = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="input-primary pl-10"
+                  className="input-primary pl-10 p-2 text-white"
                   placeholder="tu@email.com"
                   required
                 />
@@ -113,7 +113,7 @@ const Auth = () => {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="input-primary pl-10"
+                  className="input-primary pl-10 p-2 text-white"
                   placeholder="••••••••"
                   required
                 />
@@ -123,17 +123,17 @@ const Auth = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2"
+              className="btn-primary w-full flex items-center justify-center gap-2 text-white"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 text-white rounded-full animate-spin" />
               ) : isLogin ? (
                 <>
-                  <LogIn size={18} /> Iniciar Sesión
+                  <LogIn color='white' size={18} /> Iniciar Sesión
                 </>
               ) : (
                 <>
-                  <UserPlus size={18} /> Crear Cuenta
+                  <UserPlus color='white' size={18} /> Crear Cuenta
                 </>
               )}
             </button>
