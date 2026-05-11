@@ -37,17 +37,14 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-dark-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo y título */}
+
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl mb-4">
-            <span className="text-3xl">📝</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white">NoteKeep</h1>
+          <h1 className="text-3xl font-bold text-white">App de notas</h1>
           <p className="text-gray-400 mt-2">Guarda tus ideas, documentos y eventos</p>
         </div>
 
         {/* Formulario */}
-        <div className="bg-dark-800 rounded-2xl border border-dark-700 p-8">
+        <div className="bg-dark-800 rounded-2xl p-8">
           <div className="flex gap-2 mb-6">
             <button
               onClick={() => setIsLogin(true)}
