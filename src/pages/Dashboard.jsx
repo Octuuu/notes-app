@@ -182,9 +182,9 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-dark-900">
       {/* Header */}
-      <div className="border-b border-dark-800 bg-dark-800/30 sticky top-0 z-20">
+      <div className="bg-dark-800/30 sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mt-10">
             <div>
               <h1 className="text-2xl font-bold text-white">
                 Notas app
