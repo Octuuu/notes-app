@@ -96,7 +96,7 @@ const Auth = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="input-primary pl-10 p-2 text-white"
+                  className="input-primary pl-10 p-2 text-white focus:outline-none focus:ring-0"
                   placeholder="tu@email.com"
                   required
                 />
@@ -113,7 +113,7 @@ const Auth = () => {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="input-primary pl-10 p-2 text-white"
+                  className="input-primary pl-10 p-2 text-white focus:outline-none focus:ring-0"
                   placeholder="••••••••"
                   required
                 />
