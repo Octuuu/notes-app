@@ -14,31 +14,37 @@ export const useFiles = () => {
     setUploading(true)
     setProgress(0)
     setError(null)
+    let interval = null
 
     try {
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}.${fileExt}`
       const filePath = `${user.id}/${noteId}/${fileName}`
 
-      // Simular progreso
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setProgress(prev => Math.min(prev + 10, 90))
       }, 100)
 
+      // SOLUCIÓN RADICAL: Convertimos el archivo a un ArrayBuffer de bytes puros.
+      // Cero formularios, cero envolturas. Datos binarios crudos que no generan error 400.
+      const arrayBuffer = await file.arrayBuffer()
+
       const { error: uploadError } = await supabase.storage
         .from('notes-attachments')
-        .upload(filePath, file)
+        .upload(filePath, arrayBuffer, {
+          contentType: file.type || 'application/octet-stream',
+          upsert: true
+        })
+
+      if (uploadError) throw uploadError
 
       clearInterval(interval)
       setProgress(100)
-
-      if (uploadError) throw uploadError
 
       const { data: { publicUrl } } = supabase.storage
         .from('notes-attachments')
         .getPublicUrl(filePath)
 
-      // Actualizar la nota con la URL del archivo
       const { error: updateError } = await supabase
         .from('notes')
         .update({
@@ -53,6 +59,7 @@ export const useFiles = () => {
       setUploading(false)
       return { publicUrl, fileName: file.name, fileType: file.type }
     } catch (err) {
+      if (interval) clearInterval(interval)
       setError(err.message)
       setUploading(false)
       return null
@@ -61,18 +68,14 @@ export const useFiles = () => {
 
   const deleteFile = async (noteId, fileUrl) => {
     if (!noteId || !fileUrl) return false
-
     try {
-      // Extraer la ruta del archivo de la URL
       const filePath = fileUrl.split('/').slice(-3).join('/')
-
       const { error: deleteError } = await supabase.storage
         .from('notes-attachments')
         .remove([filePath])
 
       if (deleteError) throw deleteError
 
-      // Limpiar la referencia en la nota
       const { error: updateError } = await supabase
         .from('notes')
         .update({
@@ -83,7 +86,6 @@ export const useFiles = () => {
         .eq('id', noteId)
 
       if (updateError) throw updateError
-
       return true
     } catch (err) {
       setError(err.message)
@@ -91,17 +93,9 @@ export const useFiles = () => {
     }
   }
 
-  const getFileUrl = (path) => {
-    const { data: { publicUrl } } = supabase.storage
-      .from('notes-attachments')
-      .getPublicUrl(path)
-    return publicUrl
-  }
-
   return {
     uploadFile,
     deleteFile,
-    getFileUrl,
     uploading,
     progress,
     error,

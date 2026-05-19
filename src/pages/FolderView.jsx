@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabaseClient'
-import { ArrowLeft, Plus, FileText, Trash2, MoreVertical, Edit2, Calendar, File } from 'lucide-react'
+import { ArrowLeft, Plus, FileText, Trash2, MoreVertical, Calendar, File } from 'lucide-react'
 import { formatDate, truncateText } from '../lib/utils'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 

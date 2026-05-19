@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react'
+import { Upload, File, X, AlertCircle } from 'lucide-react'
 
 const FileUpload = ({ onUpload, onRemove, file, accept = '*/*', maxSize = 5242880 }) => {
   const [uploading, setUploading] = useState(false)
@@ -16,7 +16,7 @@ const FileUpload = ({ onUpload, onRemove, file, accept = '*/*', maxSize = 524288
   }
 
   const handleFileSelect = async (e) => {
-    const selectedFile = e.target.files[0]
+    const selectedFile = e.target.files?.[0]
     if (!selectedFile) return
 
     setError(null)
@@ -24,29 +24,36 @@ const FileUpload = ({ onUpload, onRemove, file, accept = '*/*', maxSize = 524288
 
     setUploading(true)
     setProgress(0)
+    let interval
 
     try {
-      // Simular progreso de subida
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setProgress(prev => Math.min(prev + 10, 90))
       }, 100)
 
-      await onUpload(selectedFile)
+      // BLINDAJE: Forzamos la creación de un Blob binario limpio basado en el archivo
+      // Esto destruye cualquier cabecera oculta de formulario que Firefox/Chrome intenten inyectar
+      const cleanBlob = new Blob([selectedFile], { type: selectedFile.type })
+      cleanBlob.name = selectedFile.name // preservamos el nombre
+
+      await onUpload(cleanBlob)
       
       clearInterval(interval)
       setProgress(100)
       setTimeout(() => setUploading(false), 500)
     } catch (err) {
-      setError('Error al subir el archivo')
+      setError(err?.message || 'Error al subir el archivo')
       setUploading(false)
+    } finally {
+      if (interval) clearInterval(interval)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
-  const handleRemove = () => {
+  const handleRemove = (e) => {
+    e.stopPropagation()
     onRemove?.()
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   if (file) {
@@ -55,10 +62,7 @@ const FileUpload = ({ onUpload, onRemove, file, accept = '*/*', maxSize = 524288
         <div className="flex items-center gap-2">
           <File size={18} className="text-purple-400" />
           <div>
-            <p className="text-sm font-medium truncate max-w-[200px]">{file.name}</p>
-            <p className="text-xs text-gray-400">
-              {(file.size / 1024).toFixed(0)} KB
-            </p>
+            <p className="text-sm font-medium truncate max-w-[150px]">{file.name}</p>
           </div>
         </div>
         <button onClick={handleRemove} className="p-1 hover:bg-dark-600 rounded transition">
@@ -71,16 +75,13 @@ const FileUpload = ({ onUpload, onRemove, file, accept = '*/*', maxSize = 524288
   return (
     <div className="space-y-3">
       <div
-        onClick={() => fileInputRef.current?.click()}
-        className="border-2 border-dashed border-dark-600 rounded-lg p-6 text-center cursor-pointer hover:border-purple-500 transition"
+        onClick={() => !uploading && fileInputRef.current?.click()}
+        className={`border-2 border-dashed border-dark-600 rounded-lg p-4 text-center transition ${
+          uploading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:border-purple-500'
+        }`}
       >
-        <Upload className="mx-auto text-gray-500 mb-2" size={32} />
-        <p className="text-sm text-gray-400">
-          Haz clic para subir un archivo
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          PDF, Imágenes, Documentos (máx. 5MB)
-        </p>
+        <Upload className="mx-auto text-gray-500 mb-1" size={24} />
+        <p className="text-xs text-gray-400">Subir archivo (máx. 5MB)</p>
       </div>
 
       {uploading && (
@@ -91,14 +92,13 @@ const FileUpload = ({ onUpload, onRemove, file, accept = '*/*', maxSize = 524288
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs text-gray-400 text-center">Subiendo... {progress}%</p>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 p-2 bg-red-500/10 rounded-lg text-red-400 text-sm">
-          <AlertCircle size={16} />
-          {error}
+        <div className="flex items-center gap-2 p-2 bg-red-500/10 rounded-lg text-red-400 text-xs">
+          <AlertCircle size={14} />
+          <span className="truncate">{error}</span>
         </div>
       )}
 

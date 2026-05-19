@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Save, Upload, File, X, Download } from 'lucide-react'
+import { Save, File, X, Download } from 'lucide-react'
 import { supabase } from '../../lib/supabaseClient'
+import { useFiles } from '../../hooks/useFiles' // <-- Importamos tu hook de archivos
+import FileUpload from './FileUpload' 
 
-const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
+const NoteEditor = ({ note, onSave, onRefreshNote }) => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [saving, setSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState(null)
+
+  // Desestructuramos las utilidades de tu hook useFiles
+  const { uploadFile, deleteFile } = useFiles()
 
   useEffect(() => {
     if (note) {
@@ -45,6 +50,37 @@ const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleSave])
 
+  // Manejador local que conecta el componente FileUpload con tu hook useFiles
+  const handleDirectUpload = async (file) => {
+    // LLama directamente a tu función del hook pasando el archivo nativo
+    const result = await uploadFile(file, note.id)
+    
+    if (!result) {
+      throw new Error('No se pudo subir el archivo. Revisa los permisos de Supabase Storage.')
+    }
+
+    // Refresca el estado de la nota si pasaste la función desencadenante
+    if (onRefreshNote) {
+      await onRefreshNote(note.id)
+    } else {
+      window.location.reload()
+    }
+  }
+
+  // Manejador local para eliminar el archivo usando tu hook useFiles
+  const handleDirectDelete = async () => {
+    if (!note.file_url) return
+    
+    const success = await deleteFile(note.id, note.file_url)
+    if (success) {
+      if (onRefreshNote) {
+        await onRefreshNote(note.id)
+      } else {
+        window.location.reload()
+      }
+    }
+  }
+
   if (!note) {
     return (
       <div className="flex-1 flex items-center justify-center text-gray-500">
@@ -52,6 +88,11 @@ const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
       </div>
     )
   }
+
+  // Mapeamos los datos para que el FileUpload sepa que ya hay un archivo en la nota
+  const currentAttachedFile = note.file_url 
+    ? { name: note.file_name || 'Archivo adjunto', size: 0 } 
+    : null
 
   return (
     <div className="flex-1 flex flex-col h-full">
@@ -74,11 +115,17 @@ const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
             )}
           </div>
           
-          <label className="flex items-center gap-2 px-3 py-2 bg-dark-700 rounded-lg hover:bg-dark-600 transition cursor-pointer text-sm">
-            <Upload size={16} />
-            Subir archivo
-            <input type="file" onChange={onFileUpload} className="hidden" />
-          </label>
+          {/* Componente drag & drop / click visual limpio */}
+          {!note.file_url && (
+            <div className="w-64">
+              <FileUpload 
+                onUpload={handleDirectUpload}
+                onRemove={handleDirectDelete}
+                file={currentAttachedFile}
+                accept=".pdf,.docx,.doc,image/*"
+              />
+            </div>
+          )}
         </div>
 
         <input
@@ -90,7 +137,7 @@ const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
         />
       </div>
 
-      {/* Adjuntos */}
+      {/* Caja de visualización si el archivo ya existe */}
       {note.file_url && (
         <div className="border-b border-dark-700 p-4 bg-dark-800/30">
           <div className="flex items-center justify-between">
@@ -104,10 +151,10 @@ const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
               </div>
             </div>
             <div className="flex gap-2">
-              <a href={note.file_url} download className="p-2 hover:bg-dark-700 rounded-lg transition">
+              <a href={note.file_url} download target="_blank" rel="noreferrer" className="p-2 hover:bg-dark-700 rounded-lg transition">
                 <Download size={18} />
               </a>
-              <button onClick={onFileDelete} className="p-2 hover:bg-dark-700 rounded-lg transition text-red-400">
+              <button onClick={handleDirectDelete} className="p-2 hover:bg-dark-700 rounded-lg transition text-red-400">
                 <X size={18} />
               </button>
             </div>
@@ -120,8 +167,7 @@ const NoteEditor = ({ note, onSave, onFileUpload, onFileDelete }) => {
         value={content}
         onChange={(e) => setContent(e.target.value)}
         className="flex-1 w-full p-6 bg-transparent focus:outline-none text-gray-200 leading-relaxed resize-none"
-        placeholder="Escribe aquí tu nota...
-Puedes usar Ctrl+S para guardar"
+        placeholder="Escribe aquí tu nota...&#10;Puedes usar Ctrl+S para guardar"
       />
     </div>
   )
